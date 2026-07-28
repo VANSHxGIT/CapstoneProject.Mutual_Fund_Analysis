@@ -1,14 +1,13 @@
 from pathlib import Path
 import pandas as pd
 import logging
+from config import RAW_DATA_PATH
+from config import PROCESSED_DATA_PATH
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(levelname)s - %(message)s"
 )
-
-RAW_DATA_PATH = Path("data/raw")
-PROCESSED_DATA_PATH = Path("data/processed")
 
 PROCESSED_DATA_PATH.mkdir(parents=True, exist_ok=True)
 
