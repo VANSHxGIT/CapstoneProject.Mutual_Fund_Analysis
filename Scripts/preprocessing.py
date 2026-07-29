@@ -343,7 +343,7 @@ def clean_scheme_performance(df: pd.DataFrame) -> pd.DataFrame:
 
         df[column] = pd.to_numeric(
             df[column],
-            errors="ignore"
+            errors="coerce"
         )
 
     return df
