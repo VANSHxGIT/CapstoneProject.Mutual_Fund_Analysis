@@ -27,3 +27,7 @@ DATA_PATH = PROJECT_ROOT / "data"
 RAW_DATA_PATH = DATA_PATH / "raw"
 PROCESSED_DATA_PATH = DATA_PATH / "processed"
 REPORT_PATH = DATA_PATH / "reports" 
+
+SQL_PATH = PROJECT_ROOT / "sql"
+
+DATABASE_PATH = SQL_PATH / "mutual_fund.db"
