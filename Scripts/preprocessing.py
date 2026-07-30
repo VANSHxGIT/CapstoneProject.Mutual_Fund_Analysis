@@ -77,6 +77,29 @@ def basic_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
+def clean_fund_metadata(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Clean MF API fund metadata.
+    """
+
+    logger.info("Cleaning Fund Metadata")
+
+    df = basic_cleaning(df)
+
+    if "scheme_code" in df.columns:
+        df["scheme_code"] = pd.to_numeric(
+            df["scheme_code"],
+            errors="coerce"
+        )
+
+    df.drop_duplicates(
+        subset="scheme_code",
+        inplace=True
+    )
+
+    return df
+
+
 # =========================================================
 # 01_fund_master.csv
 # =========================================================
@@ -128,10 +151,10 @@ def clean_nav_history(df: pd.DataFrame) -> pd.DataFrame:
     df = basic_cleaning(df)
 
     # Convert AMFI Code
-    if "amfi_code" in df.columns:
+    if "scheme_code" in df.columns:
 
-        df["amfi_code"] = pd.to_numeric(
-            df["amfi_code"],
+        df["scheme_code"] = pd.to_numeric(
+            df["scheme_code"],
             errors="coerce"
         )
 
@@ -160,8 +183,8 @@ def clean_nav_history(df: pd.DataFrame) -> pd.DataFrame:
     # Sort by scheme and date
     sort_columns = []
 
-    if "amfi_code" in df.columns:
-        sort_columns.append("amfi_code")
+    if "scheme_code" in df.columns:
+        sort_columns.append("scheme_code")
 
     if "date" in df.columns:
         sort_columns.append("date")
@@ -480,10 +503,10 @@ def clean_benchmark_indices(df: pd.DataFrame) -> pd.DataFrame:
 
 CLEANERS = {
 
-    "01_fund_master.csv":
-        clean_fund_master,
+    "fund_metadata.csv":
+        clean_fund_metadata,
 
-    "02_nav_history.csv":
+    "nav_history.csv":
         clean_nav_history,
 
     "03_aum_by_fund_house.csv":

@@ -23,32 +23,44 @@ def fetch_scheme_data(scheme_code: int):
 
 def save_data(json_data):
     """
-    Save metadata and NAV history separately.
+    Save metadata and NAV history.
+    If the CSV already exists, append new data.
     """
 
     meta = json_data["meta"]
     history = json_data["data"]
 
     meta_df = pd.DataFrame([meta])
-
     history_df = pd.DataFrame(history)
 
     history_df["scheme_code"] = meta["scheme_code"]
 
     os.makedirs(RAW_DATA_PATH, exist_ok=True)
 
-    meta_df.to_csv(
-        f"{RAW_DATA_PATH}/fund_metadata.csv",
-        index=False
-    )
+    metadata_file = f"{RAW_DATA_PATH}/fund_metadata.csv"
+    history_file = f"{RAW_DATA_PATH}/nav_history.csv"
 
-    history_df.to_csv(
-        f"{RAW_DATA_PATH}/nav_history.csv",
-        index=False
-    )
+    # ---------- FUND METADATA ----------
+    if os.path.exists(metadata_file):
+        existing = pd.read_csv(metadata_file)
+        meta_df = pd.concat([existing, meta_df], ignore_index=True)
 
-    print("Data saved successfully.")
+        # remove duplicates
+        meta_df.drop_duplicates(
+            subset=["scheme_code"],
+            inplace=True
+        )
 
+    meta_df.to_csv(metadata_file, index=False)
+
+    # ---------- NAV HISTORY ----------
+    if os.path.exists(history_file):
+        existing = pd.read_csv(history_file)
+        history_df = pd.concat([existing, history_df], ignore_index=True)
+
+    history_df.to_csv(history_file, index=False)
+
+    print(f"Saved scheme {meta['scheme_code']}")
 
 def main():
 
