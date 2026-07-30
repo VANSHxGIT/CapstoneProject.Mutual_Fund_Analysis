@@ -121,9 +121,10 @@ def main():
     for file in csv_files:
 
         table_name = file.stem
-        # Remove numeric prefix like "01_", "02_", etc.
-        if "_" in table_name:
-            table_name = table_name.split("_", 1)[1]
+
+        # Remove numeric prefixes only (01_, 02_, ...)
+        if len(table_name) >= 3 and table_name[:2].isdigit() and table_name[2] == "_":
+            table_name = table_name[3:]
 
         try:
 

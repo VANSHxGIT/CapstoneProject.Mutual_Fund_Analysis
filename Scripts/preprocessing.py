@@ -150,9 +150,8 @@ def clean_nav_history(df: pd.DataFrame) -> pd.DataFrame:
 
     df = basic_cleaning(df)
 
-    # Convert AMFI Code
+    # Convert scheme code
     if "scheme_code" in df.columns:
-
         df["scheme_code"] = pd.to_numeric(
             df["scheme_code"],
             errors="coerce"
@@ -160,27 +159,24 @@ def clean_nav_history(df: pd.DataFrame) -> pd.DataFrame:
 
     # Convert NAV
     if "nav" in df.columns:
-
         df["nav"] = pd.to_numeric(
             df["nav"],
             errors="coerce"
         )
 
-    # Convert Date
+    # Convert date
     if "date" in df.columns:
-
         df["date"] = pd.to_datetime(
             df["date"],
             errors="coerce",
             dayfirst=True
         )
 
-    # Remove invalid records
+    # Remove invalid NAV values
     if "nav" in df.columns:
-
         df = df[df["nav"] > 0]
 
-    # Sort by scheme and date
+    # Sort data
     sort_columns = []
 
     if "scheme_code" in df.columns:
