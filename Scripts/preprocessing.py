@@ -114,7 +114,7 @@ def clean_fund_master(df: pd.DataFrame) -> pd.DataFrame:
     df = basic_cleaning(df)
 
     numeric_columns = [
-        "amfi_code",
+        "scheme_code",
         "expense_ratio_pct"
     ]
 
@@ -128,10 +128,10 @@ def clean_fund_master(df: pd.DataFrame) -> pd.DataFrame:
             )
 
     # Remove duplicate AMFI Codes if any
-    if "amfi_code" in df.columns:
+    if "scheme_code" in df.columns:
 
         df = df.drop_duplicates(
-            subset="amfi_code"
+            subset="scheme_code"
         )
 
     return df
@@ -342,10 +342,10 @@ def clean_scheme_performance(df: pd.DataFrame) -> pd.DataFrame:
     df = basic_cleaning(df)
 
     # Convert AMFI code
-    if "amfi_code" in df.columns:
+    if "scheme_code" in df.columns:
 
-        df["amfi_code"] = pd.to_numeric(
-            df["amfi_code"],
+        df["scheme_code"] = pd.to_numeric(
+            df["scheme_code"],
             errors="coerce"
         )
 
