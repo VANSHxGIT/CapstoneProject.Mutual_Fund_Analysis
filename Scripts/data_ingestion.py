@@ -59,7 +59,7 @@ def save_report(report_text: str):
     Save the data quality report.
     """
 
-    os.makedirs(REPORT_PATH, exist_ok=True)
+    REPORT_PATH.mkdir(parents=True, exist_ok=True)
 
     report_file = REPORT_PATH / "data_quality_report.txt"
 
@@ -69,7 +69,7 @@ def save_report(report_text: str):
     print(f"\nReport saved to {report_file}")
 def main():
 
-    report = ""
+    report_lines = []
 
     csv_files = list(RAW_DATA_PATH.glob("*.csv"))
 
@@ -85,43 +85,43 @@ def main():
 
         quality = analyze_data_quality(df)
 
-        report += f"\n{'=' * 60}\n"
-        report += f"Dataset: {csv_file.name}\n"
+        report_lines.append(f"\n{'=' * 60}\n")
+        report_lines.append(f"Dataset: {csv_file.name}\n")
 
-        report += "=" * 70 + "\n"
-        report += f"Dataset: {csv_file.name}\n"
-        report += "=" * 70 + "\n\n"
+        report_lines.append("=" * 70 + "\n")
+        report_lines.append(f"Dataset: {csv_file.name}\n")
+        report_lines.append("=" * 70 + "\n\n")
 
-        report += f"Rows: {quality['Rows']}\n"
-        report += f"Columns: {quality['Columns']}\n\n"
+        report_lines.append(f"Rows: {quality['Rows']}\n")
+        report_lines.append(f"Columns: {quality['Columns']}\n\n")
 
-        report += "Column Names\n"
-        report += "-" * 30 + "\n"
+        report_lines.append("Column Names\n")
+        report_lines.append("-" * 30 + "\n")
 
         for column in quality["Column Names"]:
-            report += f"- {column}\n"
+            report_lines.append(f"- {column}\n")
 
-        report += "\nData Types\n"
-        report += "-" * 30 + "\n"
+        report_lines.append("\nData Types\n")
+        report_lines.append("-" * 30 + "\n")
 
         for column, dtype in quality["Data Types"].items():
-            report += f"{column}: {dtype}\n"
+            report_lines.append(f"{column}: {dtype}\n")
 
-        report += "\nMissing Values\n"
-        report += "-" * 30 + "\n"
+        report_lines.append("\nMissing Values\n")
+        report_lines.append("-" * 30 + "\n")
 
         for column, missing in quality["Missing Values"].items():
-            report += f"{column}: {missing}\n"
+            report_lines.append(f"{column}: {missing}\n")
 
-        report += f"\nDuplicate Rows: {quality['Duplicate Rows']}\n"
-        report += f"Memory Usage (KB): {quality['Memory Usage (KB)']}\n"
+        report_lines.append(f"\nDuplicate Rows: {quality['Duplicate Rows']}\n")
+        report_lines.append(f"Memory Usage (KB): {quality['Memory Usage (KB)']}\n")
 
-        report += "\nSample Records\n"
-        report += "-" * 30 + "\n"
-        report += quality["Sample Data"]
+        report_lines.append("\nSample Records\n")
+        report_lines.append("-" * 30 + "\n")
+        report_lines.append(quality["Sample Data"])
 
-        report += "\n\n"
+        report_lines.append("\n\n")
 
-        save_report(report)
+    save_report("".join(report_lines))
 if __name__ == "__main__":
     main()
