@@ -4,6 +4,7 @@ Load all processed CSV files into SQLite database.
 
 import logging
 import sqlite3
+from contextlib import closing
 
 import pandas as pd
 
@@ -104,50 +105,42 @@ def main():
     logger.info("Loading processed CSV files into SQLite")
     logger.info("=" * 60)
 
-    connection = connect_database()
-
-    csv_files = sorted(
-        PROCESSED_DATA_PATH.glob("*.csv")
-    )
-
-    if not csv_files:
-
-        logger.warning(
-            "No processed CSV files found."
+    with closing(connect_database()) as connection:
+        csv_files = sorted(
+            PROCESSED_DATA_PATH.glob("*.csv")
         )
 
-        return
-
-    for file in csv_files:
-
-        table_name = file.stem
-
-        # Remove numeric prefixes only (01_, 02_, ...)
-        if len(table_name) >= 3 and table_name[:2].isdigit() and table_name[2] == "_":
-            table_name = table_name[3:]
-
-        try:
-
-            df = load_csv(file)
-
-            load_table(
-                df,
-                table_name,
-                connection
+        if not csv_files:
+            logger.warning(
+                "No processed CSV files found."
             )
+            return
 
-            verify_table(
-                table_name,
-                connection
-            )
+        for file in csv_files:
+            table_name = file.stem
 
-        except Exception as e:
+            # Remove numeric prefixes only (01_, 02_, ...)
+            if len(table_name) >= 3 and table_name[:2].isdigit() and table_name[2] == "_":
+                table_name = table_name[3:]
 
-            logger.exception(
-                f"Failed to load {file.name}: {e}"
-            )
+            try:
+                df = load_csv(file)
 
-    connection.close()
+                load_table(
+                    df,
+                    table_name,
+                    connection
+                )
+
+                verify_table(
+                    table_name,
+                    connection
+                )
+
+            except Exception as e:
+                logger.exception(
+                    f"Failed to load {file.name}: {e}"
+                )
 
     logger.info("=" * 60)
     logger.info("Database loading completed.")

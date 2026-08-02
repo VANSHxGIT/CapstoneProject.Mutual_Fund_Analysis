@@ -65,13 +65,9 @@ def basic_cleaning(df: pd.DataFrame) -> pd.DataFrame:
     # Trim string columns
     string_columns = df.select_dtypes(include="object").columns
 
-    for column in string_columns:
-
-        df[column] = (
-            df[column]
-            .astype(str)
-            .str.strip()
-            .replace("", pd.NA)
+    if not string_columns.empty:
+        df[string_columns] = df[string_columns].apply(
+            lambda col: col.astype(str).str.strip().replace("", pd.NA)
         )
 
     return df
