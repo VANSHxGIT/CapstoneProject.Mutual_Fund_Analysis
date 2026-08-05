@@ -51,30 +51,64 @@ def save_all_data(all_metadata: list, all_history: list):
 
 
 def main():
-    all_metadata = []
-    all_history = []
 
-    for code in SCHEME_CODES:
-        print(f"Downloading {code}")
+    # Read all scheme codes
+    scheme_df = pd.read_csv(
+    f"{RAW_DATA_PATH}/07_scheme_performance.csv"
+)
+
+    scheme_codes = (
+        scheme_df["amfi_code"]
+        .dropna()
+        .astype(int)
+        .unique()
+    )
+
+    print(f"Found {len(scheme_codes)} schemes.")
+
+    metadata_list = []
+    history_list = []
+
+    for code in scheme_codes:
+
         try:
+
+            print(f"Downloading {code}")
+
             data = fetch_scheme_data(code)
+
             meta = data["meta"]
-            history = data["data"]
+            history = pd.DataFrame(data["data"])
 
-            all_metadata.append(meta)
+            history["scheme_code"] = meta["scheme_code"]
 
-            for record in history:
-                record["scheme_code"] = meta["scheme_code"]
-                
-            all_history.extend(history)
-            
-            print(f"Processed scheme {meta['scheme_code']}")
+            metadata_list.append(meta)
+            history_list.append(history)
+
         except Exception as e:
-            print(f"Failed to fetch {code}: {e}")
 
-    print("Saving all data...")
-    save_all_data(all_metadata, all_history)
+            print(f"Failed: {code} -> {e}")
+
+    metadata_df = pd.DataFrame(metadata_list)
+
+    history_df = pd.concat(
+        history_list,
+        ignore_index=True
+    )
+
+    metadata_df.to_csv(
+        f"{RAW_DATA_PATH}/fund_metadata.csv",
+        index=False
+    )
+
+    history_df.to_csv(
+        f"{RAW_DATA_PATH}/nav_history.csv",
+        index=False
+    )
+
     print("Done!")
+    print(f"Metadata rows : {len(metadata_df)}")
+    print(f"NAV rows      : {len(history_df)}")
 
 
 if __name__ == "__main__":
