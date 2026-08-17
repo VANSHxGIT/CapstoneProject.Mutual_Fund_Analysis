@@ -8,7 +8,7 @@ Missing values: {'fund_house': 6, 'scheme_type': 6, 'scheme_category': 6, 'schem
 
 ======================================================================
 Dataset: 02_nav_history.csv
-Rows: 98067
+Rows: 98063
 Columns: 3
 Duplicate rows: 0
 Columns: ['date', 'nav', 'scheme_code']
